@@ -2,12 +2,15 @@ package com.tropogo.assesment.model;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Email;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -40,25 +43,24 @@ public class Job {
 	
 	@NotBlank(message = "keySkills can't be blank")
 	private String keySkills;
-	
-	@NotBlank(message = "postedUser can't be blank")
-	private String postedUser;
-	
-	@NotBlank(message = "mailId can't be blank")
-	@Email(message = "invalid mail format")
-	private String mailId;
 
+	@ManyToOne(cascade = {
+            CascadeType.MERGE,
+            CascadeType.REFRESH
+        })
+	@JoinColumn(name ="user_id")
+	@Valid
+	private User user;
+	
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "postedDate can't be blank")
 	private Date postedDate;
-
+    
 	public Job(@NotBlank(message = "companyName can't be blank") String companyName,
 			@NotBlank(message = "designation can't be blank") String designation,
 			@NotBlank(message = "discription can't be blank") String discription, double ctcInLpa, String jobLocation,
 			long minExperience, long maxExperience, @NotBlank(message = "keySkills can't be blank") String keySkills,
-			@NotBlank(message = "postedUser can't be blank") String postedUser,
-			@NotBlank(message = "mailId can't be blank") @Email(message = "invalid mail format") String mailId,
-			@NotNull(message = "postedDate can't be blank") Date postedDate) {
+			@Valid User user, @NotNull(message = "postedDate can't be blank") Date postedDate) {
 		super();
 		this.companyName = companyName;
 		this.designation = designation;
@@ -68,11 +70,10 @@ public class Job {
 		this.minExperience = minExperience;
 		this.maxExperience = maxExperience;
 		this.keySkills = keySkills;
-		this.postedUser = postedUser;
-		this.mailId = mailId;
+		this.user = user;
 		this.postedDate = postedDate;
 	}
-	
+
 	public Job() {}
 
 	public long getJobId() {
@@ -147,20 +148,12 @@ public class Job {
 		this.keySkills = keySkills;
 	}
 
-	public String getPostedUser() {
-		return postedUser;
+	public User getUser() {
+		return user;
 	}
 
-	public void setPostedUser(String postedUser) {
-		this.postedUser = postedUser;
-	}
-
-	public String getMailId() {
-		return mailId;
-	}
-
-	public void setMailId(String mailId) {
-		this.mailId = mailId;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public Date getPostedDate() {
